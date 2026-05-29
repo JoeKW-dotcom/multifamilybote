@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Multifamily Development | BOTE Investment Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><i class="fas fa-building"></i> Multifamily BOTE</h1>
+                    <p>Back of the Envelope Development Analysis</p>
+                </div>
+                <div class="badge-container">
+                    <span class="badge"><i class="fas fa-chart-line"></i> Real-time</span>
+                    <span class="badge"><i class="fas fa-edit"></i> Blue = Inputs</span>
+                    <span class="badge"><i class="fas fa-calculator"></i> Auto-calculating</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Guide Panel -->
+            <div class="guide-panel">
+                <div class="guide-text">
+                    <h3><i class="fas fa-lightbulb"></i> Interactive Investment Model</h3>
+                    <p>Adjust any <strong class="blue-text">blue input cell</strong> below — all metrics update instantly. Expenses appear in <span class="red-text">(red brackets)</span>.</p>
+                </div>
+                <div class="guide-badge">
+                    <i class="fas fa-chart-simple"></i> Development Spread = Exit Cap - Yield
+                </div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Development Yield</div>
+                    <div class="kpi-value" id="kpiDevYield">--</div>
+                    <div class="kpi-trend">Untrended NOI / Total Cost</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Exit Cap Rate</div>
+                    <div class="kpi-value" id="kpiExitCap">--</div>
+                    <div class="kpi-trend">Upon sale</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Development Spread</div>
+                    <div class="kpi-value" id="kpiSpread">--</div>
+                    <div class="kpi-trend">Value creation metric</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Equity Multiple</div>
+                    <div class="kpi-value" id="kpiMultiple">--</div>
+                    <div class="kpi-trend">Net proceeds / Equity</div>
+                </div>
+            </div>
+
+            <!-- Row 1: Unit Mix -->
+            <div class="grid-3">
+                <!-- Unit Mix Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-bed"></i>
+                        <h2>Unit Mix & Rental Income</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-row">
+                            <label><i class="fas fa-1" data-tooltip="Number of units"></i> 1BR / 1BA (#)</label>
+                            <input type="number" id="units1br" value="15" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label><i class="fas fa-dollar-sign" data-tooltip="Monthly rent per unit"></i> Avg Rent / Month ($)</label>
+                            <input type="number" id="rent1br" value="750" step="50">
+                        </div>
+                        <div class="input-row">
+                            <label>2BR / 2BA - Type A (#)</label>
+                            <input type="number" id="units2br_a" value="30" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Avg Rent / Month ($)</label>
+                            <input type="number" id="rent2br_a" value="1000" step="50">
+                        </div>
+                        <div class="input-row">
+                            <label>2BR / 2BA - Type B (#)</label>
+                            <input type="number" id="units2br_b" value="45" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Avg Rent / Month ($)</label>
+                            <input type="number" id="rent2br_b" value="1250" step="50">
+                        </div>
+                        <div class="input-row">
+                            <label>3BR / 3BA (#)</label>
+                            <input type="number" id="units3br" value="60" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Avg Rent / Month ($)</label>
+                            <input type="number" id="rent3br" value="1500" step="50">
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Units</span>
+                            <span class="metric-value" id="totalUnits">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Blended Rent/Unit</span>
+                            <span class="metric-value" id="blendedRent">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Potential Rental Income</span>
+                            <span class="metric-value" id="potentialRent">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operating Statement Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h2>Stabilized Operating Statement</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-row">
+                            <label>Other Income ($/unit/yr)</label>
+                            <input type="number" id="otherIncomePerUnit" value="600" step="50">
+                        </div>
+                        <div class="input-row">
+                            <label>Vacancy & Credit Loss (%)</label>
+                            <input type="number" id="vacancyPct" value="9" step="0.5">
+                        </div>
+                        <div class="input-row">
+                            <label>RE Taxes & Insurance ($/unit/yr)</label>
+                            <input type="number" id="taxInsurance" value="1500" step="100">
+                        </div>
+                        <div class="input-row">
+                            <label>Operating Expenses ($/unit/yr)</label>
+                            <input type="number" id="opExPerUnit" value="4000" step="200">
+                        </div>
+                        <div class="input-row">
+                            <label>Annual NOI Growth (%)</label>
+                            <input type="number" id="noiGrowth" value="3" step="0.5">
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Potential Gross Income</span>
+                            <span class="metric-value" id="pgiDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Vacancy Loss</span>
+                            <span class="metric-value negative" id="vacancyDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Effective Gross Income</span>
+                            <span class="metric-value" id="egiDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">RE Taxes & Insurance</span>
+                            <span class="metric-value negative" id="taxDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Operating Expenses</span>
+                            <span class="metric-value negative" id="opexDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Expenses</span>
+                            <span class="metric-value negative" id="totalExpensesDisplay">--</span>
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label"><strong>Net Operating Income</strong></span>
+                            <span class="metric-value highlight" id="noiUntrended">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">NOI Margin</span>
+                            <span class="metric-value" id="noiMargin">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Development Costs Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-hard-hat"></i>
+                        <h2>Development Costs</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-row">
+                            <label>Land Cost ($)</label>
+                            <input type="number" id="landCost" value="6000000" step="500000">
+                        </div>
+                        <div class="input-row">
+                            <label>Hard Cost per Unit ($)</label>
+                            <input type="number" id="hardCostPerUnit" value="40000" step="5000">
+                        </div>
+                        <div class="input-row">
+                            <label>Hard Cost Contingency (%)</label>
+                            <input type="number" id="hardContingency" value="10" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Soft Costs ($)</label>
+                            <input type="number" id="softCosts" value="1800000" step="200000">
+                        </div>
+                        <div class="input-row">
+                            <label>Soft Cost Contingency (%)</label>
+                            <input type="number" id="softContingency" value="10" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Construction Loan Rate (%)</label>
+                            <input type="number" id="constrRate" value="6.5" step="0.25">
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Hard Costs</span>
+                            <span class="metric-value" id="hardTotalDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Soft Costs</span>
+                            <span class="metric-value" id="softTotalDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Construction Loan Interest</span>
+                            <span class="metric-value" id="constrInterestDisplay">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Operating Deficit</span>
+                            <span class="metric-value negative" id="opDeficitDisplay">--</span>
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label"><strong>Total Project Cost</strong></span>
+                            <span class="metric-value highlight" id="totalProjectCost">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Cost Per Unit</span>
+                            <span class="metric-value" id="costPerUnit">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Financing & Exit -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <h2>Financing & Exit Assumptions</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-row">
+                            <label>Pre-construction (months)</label>
+                            <input type="number" id="preConMonths" value="6" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Construction (months)</label>
+                            <input type="number" id="constrMonths" value="18" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Lease-up to Stabilization (months)</label>
+                            <input type="number" id="leaseUpMonths" value="25" step="1">
+                        </div>
+                        <div class="input-row">
+                            <label>Senior Loan LTC (%)</label>
+                            <input type="number" id="loanPct" value="70" step="5">
+                        </div>
+                        <div class="input-row">
+                            <label>Exit Cap Rate (%)</label>
+                            <input type="number" id="exitCap" value="7.0" step="0.25">
+                        </div>
+                        <div class="input-row">
+                            <label>Selling Costs (%)</label>
+                            <input type="number" id="sellingCostsPct" value="5" step="0.5">
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Total Timeline (months)</span>
+                            <span class="metric-value" id="totalTimeline">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Senior Construction Loan</span>
+                            <span class="metric-value" id="loanAmount">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Required Equity</span>
+                            <span class="metric-value" id="requiredEquity">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h2>Returns & Exit Analysis</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-row">
+                            <span class="metric-label">Exit Month</span>
+                            <span class="metric-value" id="exitMonth">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">NOI at Exit (Trended)</span>
+                            <span class="metric-value" id="noiExit">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Gross Sales Price</span>
+                            <span class="metric-value" id="grossSales">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Selling Costs</span>
+                            <span class="metric-value negative" id="sellingCostsVal">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Net Sales Proceeds</span>
+                            <span class="metric-value highlight" id="netProceeds">--</span>
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Development Yield (Untrended)</span>
+                            <span class="metric-value" id="devYieldUntrended">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Development Yield (Trended)</span>
+                            <span class="metric-value" id="devYieldTrended">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Development Spread</span>
+                            <span class="metric-value" id="devSpread">--</span>
+                        </div>
+                        <div class="divider-light"></div>
+                        <div class="metric-row">
+                            <span class="metric-label">Net Profit</span>
+                            <span class="metric-value" id="netProfit">--</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Equity Multiple</span>
+                            <span class="metric-value" id="equityMultiple">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-column"></i>
+                        <h2>NOI Progression</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="noiProgressionChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h2>Total Project Cost Breakdown</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="costBreakdownChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <i class="fas fa-calculator"></i> Multifamily Back of the Envelope Analysis | Development Spread = Exit Cap Rate - Stabilized Yield | All figures in USD
+        </div>
+    </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
